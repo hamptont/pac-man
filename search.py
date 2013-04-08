@@ -83,55 +83,63 @@ def depthFirstSearch(problem):
   """
   "*** YOUR CODE HERE ***"
   from game import Directions
-  s = Directions.SOUTH
-  w = Directions.WEST
-  e = Directions.EAST
-  n = Directions.NORTH
-  
+
+  #nodes waiting to be visited  
   nodes = util.Stack()
-#  util.Stack.push(nodes, 3);
-#  print util.Stack.pop(nodes);
   
-  print "Start:", problem.getStartState()
-  print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-  print "Start's successors:", problem.getSuccessors(problem.getStartState())
- 
-  #visited nodes
+  #nodes we have already visited
   visited = {}
- 
+  
+  #Used to keep track of known path between nodes
+  path = {}
+  
   #start case
   startState = problem.getStartState()
   visited[startState] = []
   if(not problem.isGoalState(problem.getStartState())):
     successors = problem.getSuccessors(startState)
-    print "successors: ", successors
     for successor in successors:
-	  print "push to stack - successor: ", successor
 	  util.Stack.push(nodes, successor)    
+	  path[successor] = startState
 
     	  
-  #other cases
+  #depthFirstSearch case
   currentNode = util.Stack.pop(nodes);
   while (not problem.isGoalState(currentNode[0])): #TODO empty stack case
-    print "pop from stack - currentNode:  ", currentNode
-    print "visited: ", visited
     if not currentNode[0] in visited.keys():
     	successors = problem.getSuccessors(currentNode[0])
-        print "successors: ", successors
         for successor in successors:
-          print "push to stack - successor: ", successor 
           util.Stack.push(nodes, successor)  
-        visited[currentNode[0]].push('hello');
-
-    else:
-	  print "DOUBLE VALUE!"
-	  
-	
+          path[successor] = currentNode
+        visited[currentNode[0]] = 1
     currentNode = util.Stack.pop(nodes)
   
-  print "DONE!"
-  return  [s,s,w,s,w,w,s,w]
+  #find path from end node to start
+  directions = [currentNode[1]]
+  while not (path[currentNode] == startState):
+    directions.append(path[currentNode][1])
+    currentNode = path[currentNode]
   
+  s = Directions.SOUTH
+  w = Directions.WEST
+  e = Directions.EAST
+  n = Directions.NORTH
+  
+  #Convert Strings into enum values
+  for i in range(len(directions)):
+    dir = directions[i]
+    if dir == 'North':
+	  directions[i] = n
+    elif dir == 'East':
+	  directions[i] = e
+    elif dir == 'South':
+	  directions[i] = s
+    else:
+	  directions[i] = w
+	  
+  #Need to reverse list to give directions from start to end	  
+  print directions[::-1]	 
+  return directions[::-1]  
 
 def breadthFirstSearch(problem):
   "Search the shallowest nodes in the search tree first. [p 81]"
