@@ -143,7 +143,63 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
   "Search the shallowest nodes in the search tree first. [p 81]"
   "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
+  from game import Directions
+
+  #nodes waiting to be visited  
+  nodes = util.Queue()
+  
+  #nodes we have already visited
+  visited = {}
+  
+  #Used to keep track of known path between nodes
+  path = {}
+  
+  #start case
+  startState = problem.getStartState()
+  visited[startState] = []
+  if(not problem.isGoalState(problem.getStartState())):
+    successors = problem.getSuccessors(startState)
+    for successor in successors:
+	  util.Queue.push(nodes, successor)    
+	  path[successor] = startState
+
+    	  
+  #depthFirstSearch case
+  currentNode = util.Queue.pop(nodes);
+  while (not problem.isGoalState(currentNode[0])): #TODO empty Queue case
+    if not currentNode[0] in visited.keys():
+    	successors = problem.getSuccessors(currentNode[0])
+        for successor in successors:
+          util.Queue.push(nodes, successor)  
+          path[successor] = currentNode
+        visited[currentNode[0]] = 1
+    currentNode = util.Queue.pop(nodes)
+  
+  #find path from end node to start
+  directions = [currentNode[1]]
+  while not (path[currentNode] == startState):
+    directions.append(path[currentNode][1])
+    currentNode = path[currentNode]
+  
+  s = Directions.SOUTH
+  w = Directions.WEST
+  e = Directions.EAST
+  n = Directions.NORTH
+  
+  #Convert Strings into enum values
+  for i in range(len(directions)):
+    dir = directions[i]
+    if dir == 'North':
+	  directions[i] = n
+    elif dir == 'East':
+	  directions[i] = e
+    elif dir == 'South':
+	  directions[i] = s
+    else:
+	  directions[i] = w
+	  
+  #Need to reverse list to give directions from start to end	  
+  return directions[::-1]  
       
 def uniformCostSearch(problem):
   "Search the node of least total cost first. "
