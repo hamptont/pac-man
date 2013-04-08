@@ -83,35 +83,33 @@ def depthFirstSearch(problem):
   """
   "*** YOUR CODE HERE ***"
   from game import Directions
+  startState = problem.getStartState()
 
   #nodes waiting to be visited  
   nodes = util.Stack()
   
   #nodes we have already visited
-  visited = {}
+  visited = set([startState])
   
   #Used to keep track of known path between nodes
   path = {}
   
   #start case
-  startState = problem.getStartState()
-  visited[startState] = []
   if(not problem.isGoalState(problem.getStartState())):
     successors = problem.getSuccessors(startState)
     for successor in successors:
 	  util.Stack.push(nodes, successor)    
 	  path[successor] = startState
 
-    	  
   #depthFirstSearch case
   currentNode = util.Stack.pop(nodes);
   while (not problem.isGoalState(currentNode[0])): #TODO empty stack case
-    if not currentNode[0] in visited.keys():
+    if not currentNode[0] in visited:
     	successors = problem.getSuccessors(currentNode[0])
         for successor in successors:
           util.Stack.push(nodes, successor)  
           path[successor] = currentNode
-        visited[currentNode[0]] = 1
+        visited.add(currentNode[0])
     currentNode = util.Stack.pop(nodes)
   
   #find path from end node to start
@@ -134,7 +132,7 @@ def depthFirstSearch(problem):
 	  directions[i] = e
     elif dir == 'South':
 	  directions[i] = s
-    else:
+    else: #West
 	  directions[i] = w
 	  
   #Need to reverse list to give directions from start to end	  
@@ -144,36 +142,34 @@ def breadthFirstSearch(problem):
   "Search the shallowest nodes in the search tree first. [p 81]"
   "*** YOUR CODE HERE ***"
   from game import Directions
+  startState = problem.getStartState()
 
   #nodes waiting to be visited  
-  nodes = util.Queue()
+  nodes = util.Stack()
   
   #nodes we have already visited
-  visited = {}
+  visited = set([startState])
   
   #Used to keep track of known path between nodes
   path = {}
   
   #start case
-  startState = problem.getStartState()
-  visited[startState] = []
   if(not problem.isGoalState(problem.getStartState())):
     successors = problem.getSuccessors(startState)
     for successor in successors:
-	  util.Queue.push(nodes, successor)    
+	  util.Stack.push(nodes, successor)    
 	  path[successor] = startState
 
-    	  
   #depthFirstSearch case
-  currentNode = util.Queue.pop(nodes);
-  while (not problem.isGoalState(currentNode[0])): #TODO empty Queue case
-    if not currentNode[0] in visited.keys():
+  currentNode = util.Stack.pop(nodes);
+  while (not problem.isGoalState(currentNode[0])): #TODO empty stack case
+    if not currentNode[0] in visited:
     	successors = problem.getSuccessors(currentNode[0])
         for successor in successors:
-          util.Queue.push(nodes, successor)  
+          util.Stack.push(nodes, successor)  
           path[successor] = currentNode
-        visited[currentNode[0]] = 1
-    currentNode = util.Queue.pop(nodes)
+        visited.add(currentNode[0])
+    currentNode = util.Stack.pop(nodes)
   
   #find path from end node to start
   directions = [currentNode[1]]
@@ -195,7 +191,7 @@ def breadthFirstSearch(problem):
 	  directions[i] = e
     elif dir == 'South':
 	  directions[i] = s
-    else:
+    else: #West
 	  directions[i] = w
 	  
   #Need to reverse list to give directions from start to end	  
