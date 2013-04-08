@@ -138,7 +138,6 @@ def depthFirstSearch(problem):
 	  directions[i] = w
 	  
   #Need to reverse list to give directions from start to end	  
-  print directions[::-1]	 
   return directions[::-1]  
 
 def breadthFirstSearch(problem):
