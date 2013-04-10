@@ -6,6 +6,11 @@
 # John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # For more info, see http://inst.eecs.berkeley.edu/~cs188/sp09/pacman.html
 
+
+#Hampton Terry
+#4-19-2013
+#CSE 473
+#Homework 1
 """
 In search.py, you will implement generic search algorithms which are called 
 by Pacman agents (in searchAgents.py).
@@ -268,7 +273,64 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
   "Search the node that has the lowest combined cost and heuristic first."
   "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
+  from game import Directions
+  startState = problem.getStartState()
+
+  #nodes waiting to be visited  
+  nodes = util.PriorityQueue()
+  
+  #nodes we have already visited
+  visited = set([startState])
+  
+  #Used to keep track of known path between nodes
+  path = {}
+  
+  #start case
+  if(not problem.isGoalState(problem.getStartState())):
+    successors = problem.getSuccessors(startState)
+    for successor in successors:
+	  priority = successor[2] + heuristic(successor[0], problem);
+	  util.PriorityQueue.push(nodes, successor, priority)    
+	  path[successor] = startState
+
+  #depthFirstSearch case
+  currentNode = util.PriorityQueue.pop(nodes);
+  while (not problem.isGoalState(currentNode[0])): #TODO empty stack case  
+    if not currentNode[0] in visited:
+    	successors = problem.getSuccessors(currentNode[0])
+        for successor in successors:
+          priority = currentNode[2] + successor[2] + heuristic(successor[0], problem)
+          util.PriorityQueue.push(nodes, successor, priority)  
+          print "push", successor[0], " ", heuristic(successor[0], problem)  
+          path[successor] = currentNode
+        visited.add(currentNode[0])
+    currentNode = util.PriorityQueue.pop(nodes)
+  
+  #find path from end node to start
+  directions = [currentNode[1]]
+  while not (path[currentNode] == startState):
+    directions.append(path[currentNode][1])
+    currentNode = path[currentNode]
+  
+  s = Directions.SOUTH
+  w = Directions.WEST
+  e = Directions.EAST
+  n = Directions.NORTH
+  
+  #Convert Strings into enum values
+  for i in range(len(directions)):
+    dir = directions[i]
+    if dir == 'North':
+	  directions[i] = n
+    elif dir == 'East':
+	  directions[i] = e
+    elif dir == 'South':
+	  directions[i] = s
+    else: #West
+	  directions[i] = w
+	  
+  #Need to reverse list to give directions from start to end	  
+  return directions[::-1]  
     
   
 # Abbreviations
