@@ -87,120 +87,58 @@ def depthFirstSearch(problem):
   print "Start's successors:", problem.getSuccessors(problem.getStartState())
   """
   "*** YOUR CODE HERE ***"
-  from game import Directions
   startState = problem.getStartState()
 
   #nodes waiting to be visited  
   nodes = util.Stack()
   
-  #nodes we have already visited
-  visited = set([startState])
-  
-  #Used to keep track of known path between nodes
-  path = {}
-  
   #start case
-  if(not problem.isGoalState(problem.getStartState())):
+  if(not problem.isGoalState(startState)):
     successors = problem.getSuccessors(startState)
     for successor in successors:
-	  util.Stack.push(nodes, successor)    
-	  path[successor] = startState
+	  visited = set([startState])
+	  path = [successor[1]]	  
+	  util.Stack.push(nodes, (successor, visited, path))
 
   #depthFirstSearch case
   currentNode = util.Stack.pop(nodes);
-  while (not problem.isGoalState(currentNode[0])): #TODO empty stack case
-    if not currentNode[0] in visited:
-    	successors = problem.getSuccessors(currentNode[0])
+  while (not problem.isGoalState(currentNode[0][0])): #TODO empty stack case
+    if not currentNode[0][0] in currentNode[1]:
+    	successors = problem.getSuccessors(currentNode[0][0])
         for successor in successors:
-          util.Stack.push(nodes, successor)  
-          path[successor] = currentNode
-        visited.add(currentNode[0])
+            new_visited = currentNode[1] | set([currentNode[0][0]])
+            new_path = currentNode[2] + [successor[1]]
+            util.Stack.push(nodes, (successor, new_visited, new_path))
     currentNode = util.Stack.pop(nodes)
-  
-  #find path from end node to start
-  directions = [currentNode[1]]
-  while not (path[currentNode] == startState):
-    directions.append(path[currentNode][1])
-    currentNode = path[currentNode]
-  
-  s = Directions.SOUTH
-  w = Directions.WEST
-  e = Directions.EAST
-  n = Directions.NORTH
-  
-  #Convert Strings into enum values
-  for i in range(len(directions)):
-    dir = directions[i]
-    if dir == 'North':
-	  directions[i] = n
-    elif dir == 'East':
-	  directions[i] = e
-    elif dir == 'South':
-	  directions[i] = s
-    else: #West
-	  directions[i] = w
-	  
-  #Need to reverse list to give directions from start to end	  
-  return directions[::-1]  
+  return currentNode[2]
 
 def breadthFirstSearch(problem):
   "Search the shallowest nodes in the search tree first. [p 81]"
   "*** YOUR CODE HERE ***"
-  from game import Directions
   startState = problem.getStartState()
 
   #nodes waiting to be visited  
-  nodes = util.Stack()
-  
-  #nodes we have already visited
-  visited = set([startState])
-  
-  #Used to keep track of known path between nodes
-  path = {}
+  nodes = util.Queue()
   
   #start case
-  if(not problem.isGoalState(problem.getStartState())):
+  if(not problem.isGoalState(startState)):
     successors = problem.getSuccessors(startState)
     for successor in successors:
-	  util.Stack.push(nodes, successor)    
-	  path[successor] = startState
+	  visited = set([startState])
+	  path = [successor[1]]	  
+	  util.Queue.push(nodes, (successor, visited, path))
 
   #depthFirstSearch case
-  currentNode = util.Stack.pop(nodes);
-  while (not problem.isGoalState(currentNode[0])): #TODO empty stack case
-    if not currentNode[0] in visited:
-    	successors = problem.getSuccessors(currentNode[0])
+  currentNode = util.Queue.pop(nodes);
+  while (not problem.isGoalState(currentNode[0][0])): #TODO empty Queue case
+    if not currentNode[0][0] in currentNode[1]:
+    	successors = problem.getSuccessors(currentNode[0][0])
         for successor in successors:
-          util.Stack.push(nodes, successor)  
-          path[successor] = currentNode
-        visited.add(currentNode[0])
-    currentNode = util.Stack.pop(nodes)
-  
-  #find path from end node to start
-  directions = [currentNode[1]]
-  while not (path[currentNode] == startState):
-    directions.append(path[currentNode][1])
-    currentNode = path[currentNode]
-  
-  s = Directions.SOUTH
-  w = Directions.WEST
-  e = Directions.EAST
-  n = Directions.NORTH
-  
-  #Convert Strings into enum values
-  for i in range(len(directions)):
-    dir = directions[i]
-    if dir == 'North':
-	  directions[i] = n
-    elif dir == 'East':
-	  directions[i] = e
-    elif dir == 'South':
-	  directions[i] = s
-    else: #West
-	  directions[i] = w
-	  
-  #Need to reverse list to give directions from start to end	  
-  return directions[::-1]  
+            new_visited = currentNode[1] | set([currentNode[0][0]])
+            new_path = currentNode[2] + [successor[1]]
+            util.Queue.push(nodes, (successor, new_visited, new_path))
+    currentNode = util.Queue.pop(nodes)
+  return currentNode[2]
       
 def uniformCostSearch(problem):
   "Search the node of least total cost first. "
@@ -243,23 +181,6 @@ def uniformCostSearch(problem):
     directions.append(path[currentNode][1])
     currentNode = path[currentNode]
   
-  s = Directions.SOUTH
-  w = Directions.WEST
-  e = Directions.EAST
-  n = Directions.NORTH
-  
-  #Convert Strings into enum values
-  for i in range(len(directions)):
-    dir = directions[i]
-    if dir == 'North':
-	  directions[i] = n
-    elif dir == 'East':
-	  directions[i] = e
-    elif dir == 'South':
-	  directions[i] = s
-    else: #West
-	  directions[i] = w
-	  
   #Need to reverse list to give directions from start to end	  
   return directions[::-1]  
 
@@ -311,23 +232,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
   while not (path[currentNode] == startState):
     directions.append(path[currentNode][1])
     currentNode = path[currentNode]
-  
-  s = Directions.SOUTH
-  w = Directions.WEST
-  e = Directions.EAST
-  n = Directions.NORTH
-  
-  #Convert Strings into enum values
-  for i in range(len(directions)):
-    dir = directions[i]
-    if dir == 'North':
-	  directions[i] = n
-    elif dir == 'East':
-	  directions[i] = e
-    elif dir == 'South':
-	  directions[i] = s
-    else: #West
-	  directions[i] = w
 	  
   #Need to reverse list to give directions from start to end	  
   return directions[::-1]  
