@@ -172,7 +172,6 @@ def uniformCostSearch(problem):
 				new_visited = currentNode[1] | set([currentNode[0][0]])
 				new_path = currentNode[2] + [successor[1]]
 				priority = currentNode[3] + successor[2]
-				print priority
 				util.PriorityQueue.push(nodes, (successor, new_visited, new_path, priority), priority)
 		currentNode = util.PriorityQueue.pop(nodes)
 	return currentNode[2]
@@ -185,49 +184,38 @@ def nullHeuristic(state, problem=None):
   return 0
 
 def aStarSearch(problem, heuristic=nullHeuristic):
-  "Search the node that has the lowest combined cost and heuristic first."
-  "*** YOUR CODE HERE ***"
-  from game import Directions
-  startState = problem.getStartState()
+	"Search the node that has the lowest combined cost and heuristic first."
+	"*** YOUR CODE HERE ***"
+	startState = problem.getStartState()
 
-  #nodes waiting to be visited  
-  nodes = util.PriorityQueue()
+	#nodes waiting to be visited  
+	nodes = util.PriorityQueue()
   
-  #nodes we have already visited
-  visited = set([startState])
-  
-  #Used to keep track of known path between nodes
-  path = {}
-  
-  #start case
-  if(not problem.isGoalState(problem.getStartState())):
-    successors = problem.getSuccessors(startState)
-    for successor in successors:
-	  priority = successor[2] + heuristic(successor[0], problem);
-	  util.PriorityQueue.push(nodes, successor, priority)    
-	  path[successor] = startState
+	#start case
+	if(not problem.isGoalState(startState)):
+		successors = problem.getSuccessors(startState)
+		for successor in successors:
+			visited = set([startState])
+			path = [successor[1]]	  
+			path_priority = successor[2]
+			heuristic_priority = heuristic(successor[0], problem) 
+			util.PriorityQueue.push(nodes, (successor, visited, path, path_priority), path_priority + heuristic_priority)
+	else:
+		return []
 
-  #depthFirstSearch case
-  currentNode = util.PriorityQueue.pop(nodes);
-  while (not problem.isGoalState(currentNode[0])): #TODO empty stack case  
-    if not currentNode[0] in visited:
-    	successors = problem.getSuccessors(currentNode[0])
-        for successor in successors:
-          priority = currentNode[2] + successor[2] + heuristic(successor[0], problem)
-          util.PriorityQueue.push(nodes, successor, priority)  
-          print "push", successor[0], " ", heuristic(successor[0], problem)  
-          path[successor] = currentNode
-        visited.add(currentNode[0])
-    currentNode = util.PriorityQueue.pop(nodes)
-  
-  #find path from end node to start
-  directions = [currentNode[1]]
-  while not (path[currentNode] == startState):
-    directions.append(path[currentNode][1])
-    currentNode = path[currentNode]
-	  
-  #Need to reverse list to give directions from start to end	  
-  return directions[::-1]  
+	#aStarSearch case
+	currentNode = util.PriorityQueue.pop(nodes);
+	while (not problem.isGoalState(currentNode[0][0])): 
+		if not currentNode[0][0] in currentNode[1]:
+			successors = problem.getSuccessors(currentNode[0][0])
+			for successor in successors:
+				new_visited = currentNode[1] | set([currentNode[0][0]])
+				new_path = currentNode[2] + [successor[1]]
+				path_priority = currentNode[3] + successor[2]
+				heuristic_priority = heuristic(successor[0], problem) 
+				util.PriorityQueue.push(nodes, (successor, new_visited, new_path, path_priority), path_priority + heuristic_priority )
+		currentNode = util.PriorityQueue.pop(nodes)
+	return currentNode[2]
     
   
 # Abbreviations
