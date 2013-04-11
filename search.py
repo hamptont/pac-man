@@ -133,12 +133,15 @@ def breadthFirstSearch(problem):
 		return []
 
 	#breadthFirstSearch case
+	visited_states = set([startState])
 	currentNode = util.Queue.pop(nodes);
 	while (not problem.isGoalState(currentNode[0][0])): 
-		if not currentNode[0][0] in currentNode[1]:
+#		if not currentNode[0][0] in currentNode[1]:
+		if not currentNode[0][0] in visited_states:
 			successors = problem.getSuccessors(currentNode[0][0])
 			for successor in successors:
 				new_visited = currentNode[1] | set([currentNode[0][0]])
+				visited_states = visited_states | set([currentNode[0][0]])
 				new_path = currentNode[2] + [successor[1]]
 				util.Queue.push(nodes, (successor, new_visited, new_path))
 		currentNode = util.Queue.pop(nodes)

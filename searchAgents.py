@@ -277,37 +277,27 @@ class CornersProblem(search.SearchProblem):
 	self._expanded = 0 # Number of search nodes expanded
     
 	"*** YOUR CODE HERE ***"
-
-	self.start = (startingGameState.getPacmanPosition(), startingGameState.getFood())
 	
-	print self.corners
-	'''
-	self.start[1][1][1] = True
-	self.start[1][1][top] = True
-	self.start[1][right][1] = True		
-	self.start[1][right][top] = True
-	'''
+	food = (False, False, False, False)
+	self.start = (startingGameState.getPacmanPosition(), food)
 	
   def getStartState(self):
 	"Returns the start state (in your state space, not the full Pacman state space)"
 	"*** YOUR CODE HERE ***"
-	print "START STATE", self.start
 	return self.start
 
-    
   def isGoalState(self, state):
 	"Returns whether this search state is a goal state of the problem"
 	"*** YOUR CODE HERE ***"
 
-	top, right = self.walls.height-2, self.walls.width-2 
+	top, right = self.walls.height-2, self.walls.width-2 	
+
+	food1 = state[1][0]
+	food2 = state[1][1]
+	food3 = state[1][2]
+	food4 = state[1][3]
 	
-	se_food = state[1][1][1]
-	ne_food = state[1][1][top]
-	sw_food = state[1][right][1]
-	nw_food = state[1][right][top]
-
-	return not (se_food or ne_food or sw_food or nw_food)
-
+	return food1 and food2 and food3 and food4
 	
   def getSuccessors(self, state):
 	"""
@@ -320,27 +310,32 @@ class CornersProblem(search.SearchProblem):
 	required to get there, and 'stepCost' is the incremental 
 	cost of expanding to that successor
 	"""
-#	print state
 	successors = []
+	top, right = self.walls.height-2, self.walls.width-2 	
+
 	for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
 	# Add a successor state to the successor list if the action is legal
 	# Here's a code snippet for figuring out whether a new position hits a wall:
-		new_state = state
-		x,y = new_state[0]
+		x,y = state[0]
 		dx, dy = Actions.directionToVector(action)
 		nextx, nexty = int(x + dx), int(y + dy)
 		hitsWall = self.walls[nextx][nexty]
 		if not hitsWall:
-#			new_state[1][nextx][nexty] = False #eat food if it exists
-			successor = (((nextx, nexty), new_state[1]), action, 1)
-			successor[0][1][nextx][nexty] = False
+			food1 = state[1][0]
+			food2 = state[1][1]
+			food3 = state[1][2]
+			food4 = state[1][3]
 			
-	#	successor[0][1][1][1] = False
-		#	successor[0][1][1][6] = False
-		#	successor[0][1][6][1] = False
-		
-		#	print successor[0][1][6][6]# = False
-			
+			if nextx == 1 and nexty == 1:
+				food1 = True
+			if nextx == 1 and nexty == top:
+				food2 = True
+			if nextx == right and nexty == 1:
+				food3 = True
+			if nextx == right and nexty == top:
+				food4 = True			
+
+			successor = (((nextx, nexty), (food1, food2, food3, food4)), action, 1)
 			successors.append(successor)
 	self._expanded += 1
 	return successors
