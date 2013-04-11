@@ -142,6 +142,7 @@ def breadthFirstSearch(problem):
 				new_path = currentNode[2] + [successor[1]]
 				util.Queue.push(nodes, (successor, new_visited, new_path))
 		currentNode = util.Queue.pop(nodes)
+	print currentNode[2]
 	return currentNode[2]
       
 def uniformCostSearch(problem):

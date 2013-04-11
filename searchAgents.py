@@ -106,7 +106,7 @@ class SearchAgent(Agent):
     problem = self.searchType(state) # Makes a new search problem
     self.actions  = self.searchFunction(problem) # Find a path
     totalCost = problem.getCostOfActions(self.actions)
-    print('Path found with total cost of %d in %.1f seconds' % (totalCost, time.time() - starttime))
+#    print('Path found with total cost of %d in %.1f seconds' % (totalCost, time.time() - starttime))
     if '_expanded' in dir(problem): print('Search nodes expanded: %d' % problem._expanded)
     
   def getAction(self, state):
@@ -264,74 +264,104 @@ class CornersProblem(search.SearchProblem):
   """
   
   def __init__(self, startingGameState):
-    """
-    Stores the walls, pacman's starting position and corners.
-    """
-    self.walls = startingGameState.getWalls()
-    self.startingPosition = startingGameState.getPacmanPosition()
-    top, right = self.walls.height-2, self.walls.width-2 
-    self.corners = ((1,1), (1,top), (right, 1), (right, top))
-    for corner in self.corners:
-      if not startingGameState.hasFood(*corner):
-        print 'Warning: no food in corner ' + str(corner)
-    self._expanded = 0 # Number of search nodes expanded
+	"""
+	Stores the walls, pacman's starting position and corners.
+	"""
+	self.walls = startingGameState.getWalls()
+	self.startingPosition = startingGameState.getPacmanPosition()
+	top, right = self.walls.height-2, self.walls.width-2 
+	self.corners = ((1,1), (1,top), (right, 1), (right, top))
+	for corner in self.corners:
+		if not startingGameState.hasFood(*corner):
+			print 'Warning: no food in corner ' + str(corner)
+	self._expanded = 0 # Number of search nodes expanded
     
-    "*** YOUR CODE HERE ***"
-    #Has pacmac visited each of the corners? [N, E, S, W]
-    self.visited = [0, 0, 0, 0]
-    
+	"*** YOUR CODE HERE ***"
+
+	self.start = (startingGameState.getPacmanPosition(), startingGameState.getFood())
+	
+	print self.corners
+	'''
+	self.start[1][1][1] = True
+	self.start[1][1][top] = True
+	self.start[1][right][1] = True		
+	self.start[1][right][top] = True
+	'''
+	
   def getStartState(self):
-    "Returns the start state (in your state space, not the full Pacman state space)"
-    "*** YOUR CODE HERE ***"
-    return self.startingPosition
+	"Returns the start state (in your state space, not the full Pacman state space)"
+	"*** YOUR CODE HERE ***"
+	print "START STATE", self.start
+	return self.start
 
     
   def isGoalState(self, state):
-    "Returns whether this search state is a goal state of the problem"
-    "*** YOUR CODE HERE ***"
-    return self.visited == [1, 1, 1, 1]
-       
+	"Returns whether this search state is a goal state of the problem"
+	"*** YOUR CODE HERE ***"
+
+	top, right = self.walls.height-2, self.walls.width-2 
+	
+	se_food = state[1][1][1]
+	ne_food = state[1][1][top]
+	sw_food = state[1][right][1]
+	nw_food = state[1][right][top]
+
+	return not (se_food or ne_food or sw_food or nw_food)
+
+	
   def getSuccessors(self, state):
-    """
-    Returns successor states, the actions they require, and a cost of 1.
+	"""
+	Returns successor states, the actions they require, and a cost of 1.
     
-     As noted in search.py:
-         For a given state, this should return a list of triples, 
-     (successor, action, stepCost), where 'successor' is a 
-     successor to the current state, 'action' is the action
-     required to get there, and 'stepCost' is the incremental 
-     cost of expanding to that successor
-    """
-    
-    print "self: ", self
-    print "state: ", state	
-    successors = []
-    for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-      # Add a successor state to the successor list if the action is legal
-      # Here's a code snippet for figuring out whether a new position hits a wall:
-        x,y = currentPosition
-        dx, dy = Actions.directionToVector(action)
-        nextx, nexty = int(x + dx), int(y + dy)
-        hitsWall = self.walls[nextx][nexty]
-        if not hitsWall:
-            print "woo!"
-      
-
-
-    self._expanded += 1
-    return successors
+	As noted in search.py:
+	For a given state, this should return a list of triples, 
+	(successor, action, stepCost), where 'successor' is a 
+	successor to the current state, 'action' is the action
+	required to get there, and 'stepCost' is the incremental 
+	cost of expanding to that successor
+	"""
+#	print state
+	successors = []
+	for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
+	# Add a successor state to the successor list if the action is legal
+	# Here's a code snippet for figuring out whether a new position hits a wall:
+		new_state = state
+		x,y = new_state[0]
+		dx, dy = Actions.directionToVector(action)
+		nextx, nexty = int(x + dx), int(y + dy)
+		hitsWall = self.walls[nextx][nexty]
+		if not hitsWall:
+#			new_state[1][nextx][nexty] = False #eat food if it exists
+			successor = (((nextx, nexty), new_state[1]), action, 1)
+			successor[0][1][nextx][nexty] = False
+			
+	#	successor[0][1][1][1] = False
+		#	successor[0][1][1][6] = False
+		#	successor[0][1][6][1] = False
+		
+		#	print successor[0][1][6][6]# = False
+			
+			successors.append(successor)
+	self._expanded += 1
+	return successors
 
   def getCostOfActions(self, actions):
-    """
-    Returns the cost of a particular sequence of actions.  If those actions
-    include an illegal move, return 999999.  This is implemented for you.
-    """
-    if actions == None: return 999999
-    x,y= self.startingPosition
-    for action in actions:
-      dx, dy = Actions.directionToVector(action)
-      x, y = int(x + dx), int(y + dy)
-      if self.walls[x][y]: return 999999
+	"""
+	Returns the cost of a particular sequence of actions.  If those actions
+	include an illegal move, return 999999.  This is implemented for you.
+	"""
+	if actions == None: return 999999
+	x,y= self.start[0]
+	for action in actions:
+		dx, dy = Actions.directionToVector(action)
+		x, y = int(x + dx), int(y + dy)
+		if self.walls[x][y]: 
+			return 999999
+		elif(self.corners):
+			return -1000
+		else:
+			return 1
+			
 
 
 def cornersHeuristic(state, problem):
