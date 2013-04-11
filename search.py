@@ -96,24 +96,24 @@ def depthFirstSearch(problem):
 	if(not problem.isGoalState(startState)):
 		successors = problem.getSuccessors(startState)
 		for successor in successors:
-			visited = set([startState])
 			path = [successor[1]]	  
-			util.Stack.push(nodes, (successor, visited, path))
+			util.Stack.push(nodes, (successor,  path))
 	else:
 		return []
 
-	#depthFirstSearch case
+	#breadthFirstSearch case
+	visited_states = set([startState])
 	currentNode = util.Stack.pop(nodes);
 	while (not problem.isGoalState(currentNode[0][0])): 
-		if not currentNode[0][0] in currentNode[1]:
+		if not currentNode[0][0] in visited_states:
 			successors = problem.getSuccessors(currentNode[0][0])
 			for successor in successors:
-				new_visited = currentNode[1] | set([currentNode[0][0]])
-				new_path = currentNode[2] + [successor[1]]
-				util.Stack.push(nodes, (successor, new_visited, new_path))
+				visited_states = visited_states | set([currentNode[0][0]])
+				new_path = currentNode[1] + [successor[1]]
+				util.Stack.push(nodes, (successor, new_path))
 		currentNode = util.Stack.pop(nodes)
-	return currentNode[2]
-
+	return currentNode[1]
+	
 def breadthFirstSearch(problem):
 	"Search the shallowest nodes in the search tree first. [p 81]"
 	"*** YOUR CODE HERE ***"
@@ -126,9 +126,8 @@ def breadthFirstSearch(problem):
 	if(not problem.isGoalState(startState)):
 		successors = problem.getSuccessors(startState)
 		for successor in successors:
-			visited = set([startState])
 			path = [successor[1]]	  
-			util.Queue.push(nodes, (successor, visited, path))
+			util.Queue.push(nodes, (successor,  path))
 	else:
 		return []
 
@@ -136,17 +135,14 @@ def breadthFirstSearch(problem):
 	visited_states = set([startState])
 	currentNode = util.Queue.pop(nodes);
 	while (not problem.isGoalState(currentNode[0][0])): 
-#		if not currentNode[0][0] in currentNode[1]:
 		if not currentNode[0][0] in visited_states:
 			successors = problem.getSuccessors(currentNode[0][0])
 			for successor in successors:
-				new_visited = currentNode[1] | set([currentNode[0][0]])
 				visited_states = visited_states | set([currentNode[0][0]])
-				new_path = currentNode[2] + [successor[1]]
-				util.Queue.push(nodes, (successor, new_visited, new_path))
+				new_path = currentNode[1] + [successor[1]]
+				util.Queue.push(nodes, (successor, new_path))
 		currentNode = util.Queue.pop(nodes)
-	print currentNode[2]
-	return currentNode[2]
+	return currentNode[1]
       
 def uniformCostSearch(problem):
 	"Search the node of least total cost first. "

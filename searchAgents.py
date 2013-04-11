@@ -356,8 +356,6 @@ class CornersProblem(search.SearchProblem):
 			return -1000
 		else:
 			return 1
-			
-
 
 def cornersHeuristic(state, problem):
   """
