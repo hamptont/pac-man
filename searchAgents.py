@@ -352,10 +352,6 @@ class CornersProblem(search.SearchProblem):
 		x, y = int(x + dx), int(y + dy)
 		if self.walls[x][y]: 
 			return 999999
-		elif(self.corners):
-			return -1000
-		else:
-			return 1
 
 def cornersHeuristic(state, problem):
 	"""
@@ -376,25 +372,31 @@ def cornersHeuristic(state, problem):
   
 	"*** YOUR CODE HERE ***"
 	x,y = state[0]
+	top, right = walls.height-2, walls.width-2 	
 
-	
 	food1 = state[1][0]
 	food2 = state[1][1]
 	food3 = state[1][2]
 	food4 = state[1][3]
 			
-	foodleft = 0
+	x_max = x
+	x_min = x
+	y_max = y
+	y_min = y
 	if not food1:
-		foodleft += 1
+		x_min = 1
+		y_min = 1
 	if not food2:
-		foodleft += 1
+		x_min = 1
+		y_max = top
 	if not food3:
-		foodleft += 1
+		x_max = right
+		y_min = 1
 	if not food4:
-		foodleft += 1
+		x_max = right
+		y_max = top
 		
-#	print foodleft, " ", x, " ", y
-	return foodleft
+	return (y_max - y_min) + (x_max - x_min)
 
 class AStarCornersAgent(SearchAgent):
   "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"

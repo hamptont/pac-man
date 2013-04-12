@@ -198,7 +198,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 			path = [successor[1]]	  
 			path_priority = successor[2]
 			heuristic_priority = heuristic(successor[0], problem) 
-			print "PUSH: ", path_priority, " ", heuristic_priority
 			util.PriorityQueue.push(nodes, (successor, None, path, path_priority), path_priority + heuristic_priority)
 	else:
 		return []
@@ -208,7 +207,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 	currentNode = util.PriorityQueue.pop(nodes);
 	while (not problem.isGoalState(currentNode[0][0])): 
 		if not currentNode[0][0] in visited_states:
-			print
 			successors = problem.getSuccessors(currentNode[0][0])
 			for successor in successors:
 				new_path = currentNode[2] + [successor[1]]
@@ -216,7 +214,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 				path_priority = currentNode[3] + successor[2]
 				heuristic_priority = heuristic(successor[0], problem) 
 				util.PriorityQueue.push(nodes, (successor, None, new_path, path_priority), path_priority + heuristic_priority )
-
 		currentNode = util.PriorityQueue.pop(nodes)
 	return currentNode[2]
     
