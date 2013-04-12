@@ -371,6 +371,11 @@ def cornersHeuristic(state, problem):
 	walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
   
 	"*** YOUR CODE HERE ***"
+	
+	'''
+	My Heuristic returns the distance between the (max and min x coordinates) + 
+	(max and min y coordinates) of the remaining food.
+	'''
 	x,y = state[0]
 	top, right = walls.height-2, walls.width-2 	
 
