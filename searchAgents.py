@@ -358,24 +358,43 @@ class CornersProblem(search.SearchProblem):
 			return 1
 
 def cornersHeuristic(state, problem):
-  """
-  A heuristic for the CornersProblem that you defined.
+	"""
+	A heuristic for the CornersProblem that you defined.
   
-    state:   The current search state 
-             (a data structure you chose in your search problem)
+	state:   The current search state 
+			(a data structure you chose in your search problem)
     
-    problem: The CornersProblem instance for this layout.  
+	problem: The CornersProblem instance for this layout.  
     
-  This function should always return a number that is a lower bound
-  on the shortest path from the state to a goal of the problem; i.e.
-  it should be admissible.  (You need not worry about consistency for
-  this heuristic to receive full credit.)
-  """
-  corners = problem.corners # These are the corner coordinates
-  walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
+	This function should always return a number that is a lower bound
+	on the shortest path from the state to a goal of the problem; i.e.
+	it should be admissible.  (You need not worry about consistency for
+	this heuristic to receive full credit.)
+	"""
+	corners = problem.corners # These are the corner coordinates
+	walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
   
-  "*** YOUR CODE HERE ***"
-  return 0 # Default to trivial solution
+	"*** YOUR CODE HERE ***"
+	x,y = state[0]
+
+	
+	food1 = state[1][0]
+	food2 = state[1][1]
+	food3 = state[1][2]
+	food4 = state[1][3]
+			
+	foodleft = 0
+	if not food1:
+		foodleft += 1
+	if not food2:
+		foodleft += 1
+	if not food3:
+		foodleft += 1
+	if not food4:
+		foodleft += 1
+		
+#	print foodleft, " ", x, " ", y
+	return foodleft
 
 class AStarCornersAgent(SearchAgent):
   "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
