@@ -507,6 +507,7 @@ class ClosestDotSearchAgent(SearchAgent):
   def registerInitialState(self, state):
     self.actions = []
     currentState = state
+    print "start"
     while(currentState.getFood().count() > 0): 
       nextPathSegment = self.findPathToClosestDot(currentState) # The missing piece
       self.actions += nextPathSegment
@@ -528,26 +529,27 @@ class ClosestDotSearchAgent(SearchAgent):
 	problem = AnyFoodSearchProblem(gameState)
 
 	"*** YOUR CODE HERE ***"
-	path = []
 	nodes = util.Queue()
 	if problem.isGoalState(startPosition):
 		return []
 	else:
 		successors = problem.getSuccessors(startPosition)
-	#	path = [successor[1]]	  
 		for successor in successors:
-			util.Queue.push(nodes, successor)
+			path = [successor[1]]
+			util.Queue.push(nodes, (successor, path))
 	
+	visited = set([startPosition])
 	currentNode = util.Queue.pop(nodes)
-	while not problem.isGoalState(currentNode[0]):
-		
-		successors = problem.getSuccessors(currentNode[0])
-		path = path + currentNode[1]
 
-		for successor in successors:
-			util.Queue.push(nodes, successor)
+	while not problem.isGoalState(currentNode[0][0]):
+		if not currentNode[0][0] in visited:
+			successors = problem.getSuccessors(currentNode[0][0])
+			for successor in successors:
+				visited = visited | set([currentNode[0][0]])
+				new_path = currentNode[1] + [successor[1]]
+				util.Queue.push(nodes, (successor, new_path))
 		currentNode = util.Queue.pop(nodes);
-	return path
+	return currentNode[1]
   
 class AnyFoodSearchProblem(PositionSearchProblem):
   """
@@ -581,8 +583,9 @@ class AnyFoodSearchProblem(PositionSearchProblem):
 	that will complete the problem definition.
 	"""
 	x,y = state
-    
+#	print state
 	"*** YOUR CODE HERE ***"
+#	print self.food.count()
 	return self.food[x][y]
 
 ##################
