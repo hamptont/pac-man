@@ -520,15 +520,34 @@ class ClosestDotSearchAgent(SearchAgent):
     print 'Path found with cost %d.' % len(self.actions)
     
   def findPathToClosestDot(self, gameState):
-    "Returns a path (a list of actions) to the closest dot, starting from gameState"
-    # Here are some useful elements of the startState
-    startPosition = gameState.getPacmanPosition()
-    food = gameState.getFood()
-    walls = gameState.getWalls()
-    problem = AnyFoodSearchProblem(gameState)
+	"Returns a path (a list of actions) to the closest dot, starting from gameState"
+	# Here are some useful elements of the startState
+	startPosition = gameState.getPacmanPosition()
+	food = gameState.getFood()
+	walls = gameState.getWalls()
+	problem = AnyFoodSearchProblem(gameState)
 
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+	"*** YOUR CODE HERE ***"
+	path = []
+	nodes = util.Queue()
+	if problem.isGoalState(startPosition):
+		return []
+	else:
+		successors = problem.getSuccessors(startPosition)
+	#	path = [successor[1]]	  
+		for successor in successors:
+			util.Queue.push(nodes, successor)
+	
+	currentNode = util.Queue.pop(nodes)
+	while not problem.isGoalState(currentNode[0]):
+		
+		successors = problem.getSuccessors(currentNode[0])
+		path = path + currentNode[1]
+
+		for successor in successors:
+			util.Queue.push(nodes, successor)
+		currentNode = util.Queue.pop(nodes);
+	return path
   
 class AnyFoodSearchProblem(PositionSearchProblem):
   """
@@ -557,14 +576,14 @@ class AnyFoodSearchProblem(PositionSearchProblem):
     self._visited, self._visitedlist, self._expanded = {}, [], 0
     
   def isGoalState(self, state):
-    """
-    The state is Pacman's position. Fill this in with a goal test
-    that will complete the problem definition.
-    """
-    x,y = state
+	"""
+	The state is Pacman's position. Fill this in with a goal test
+	that will complete the problem definition.
+	"""
+	x,y = state
     
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+	"*** YOUR CODE HERE ***"
+	return self.food[x][y]
 
 ##################
 # Mini-contest 1 #
