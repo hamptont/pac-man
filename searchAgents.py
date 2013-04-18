@@ -499,7 +499,7 @@ def foodHeuristic(state, problem):
 		for y in x:
 			if y:
 				food_remaining += 1
-	
+	print food_remaining
 	return food_remaining
   
 class ClosestDotSearchAgent(SearchAgent):
