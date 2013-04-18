@@ -156,10 +156,9 @@ def uniformCostSearch(problem):
 	if(not problem.isGoalState(startState)):
 		successors = problem.getSuccessors(startState)
 		for successor in successors:
-			visited = set([startState])
 			path = [successor[1]]	  
 			priority = successor[2]
-			util.PriorityQueue.push(nodes, (successor, visited, path, priority), priority)
+			util.PriorityQueue.push(nodes, (successor, None, path, priority), priority)
 	else:
 		return []
 	#uniformCostSearch case
@@ -171,8 +170,7 @@ def uniformCostSearch(problem):
 			for successor in successors:
 				visited_states = visited_states | set([currentNode[0][0]])
 				new_path = currentNode[2] + [successor[1]]
-				priority = currentNode[3] + successor[2]
-				print priority
+				priority = currentNode[3] + successor[2]				
 				util.PriorityQueue.push(nodes, (successor, None, new_path, priority), priority)
 		currentNode = util.PriorityQueue.pop(nodes)
 	return currentNode[2]
