@@ -1,3 +1,8 @@
+#Hampton Terry
+#4-19-2013
+#CSE 473
+#Homework 1
+
 # search.py
 # ---------
 # Licensing Information: Please do not distribute or publish solutions to this
@@ -6,11 +11,6 @@
 # John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # For more info, see http://inst.eecs.berkeley.edu/~cs188/sp09/pacman.html
 
-
-#Hampton Terry
-#4-19-2013
-#CSE 473
-#Homework 1
 """
 In search.py, you will implement generic search algorithms which are called 
 by Pacman agents (in searchAgents.py).

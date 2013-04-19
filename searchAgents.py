@@ -1,3 +1,8 @@
+#Hampton Terry
+#4-19-2013
+#CSE 473
+#Homework 1
+
 # searchAgents.py
 # ---------------
 # Licensing Information: Please do not distribute or publish solutions to this
@@ -495,12 +500,29 @@ def foodHeuristic(state, problem):
   
 	food_remaining = 0
 	
+	#x,y = state[0]
+
+	min_x = 10000
+	min_y = 10000
+	max_x = 0
+	max_y = 0
+	
+	x_index = 0
+	y_index = 0
 	for x in foodGrid:
 		for y in x:
 			if y:
 				food_remaining += 1
-	print food_remaining
-	return food_remaining
+				min_x = min(min_x, x_index)
+				min_y = min(min_y, y_index)
+				max_x = max(max_x, x_index)
+				max_y = max(max_y, y_index)
+				
+			y_index += 1
+		y_index = 0
+		x_index += 1
+	total_distance = max_x - min_x + max_y - min_y
+	return max(total_distance, food_remaining)
   
 class ClosestDotSearchAgent(SearchAgent):
   "Search for all food using a sequence of searches"
@@ -583,7 +605,6 @@ class AnyFoodSearchProblem(PositionSearchProblem):
 	that will complete the problem definition.
 	"""
 	x,y = state
-#	print state
 	"*** YOUR CODE HERE ***"
 #	print self.food.count()
 	return self.food[x][y]
