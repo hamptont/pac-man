@@ -1,3 +1,8 @@
+#Hampton Terry
+#4-22-2013
+#CSE 473
+#Homework 2
+
 # multiAgents.py
 # --------------
 # Licensing Information: Please do not distribute or publish solutions to this
@@ -46,30 +51,55 @@ class ReflexAgent(Agent):
     return legalMoves[chosenIndex]
 
   def evaluationFunction(self, currentGameState, action):
-    """
-    Design a better evaluation function here.
+	"""
+	Design a better evaluation function here.
 
-    The evaluation function takes in the current and proposed successor
-    GameStates (pacman.py) and returns a number, where higher numbers are better.
+	The evaluation function takes in the current and proposed successor
+	GameStates (pacman.py) and returns a number, where higher numbers are better.
 
-    The code below extracts some useful information from the state, like the
-    remaining food (oldFood) and Pacman position after moving (newPos).
-    newScaredTimes holds the number of moves that each ghost will remain
-    scared because of Pacman having eaten a power pellet.
+	The code below extracts some useful information from the state, like the
+	remaining food (oldFood) and Pacman position after moving (newPos).
+	newScaredTimes holds the number of moves that each ghost will remain
+	scared because of Pacman having eaten a power pellet.
 
-    Print out these variables to see what you're getting, then combine them
-    to create a masterful evaluation function.
-    """
-    # Useful information you can extract from a GameState (pacman.py)
-    successorGameState = currentGameState.generatePacmanSuccessor(action)
-    newPos = successorGameState.getPacmanPosition()
-    oldFood = currentGameState.getFood()
-    newGhostStates = successorGameState.getGhostStates()
-    newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+	Print out these variables to see what you're getting, then combine them
+	to create a masterful evaluation function.
+	"""
+	# Useful information you can extract from a GameState (pacman.py)
+	successorGameState = currentGameState.generatePacmanSuccessor(action)
+	newPos = successorGameState.getPacmanPosition()
+	oldFood = currentGameState.getFood()
+	newGhostStates = successorGameState.getGhostStates()
+	newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
-    "*** YOUR CODE HERE ***"
-    return successorGameState.getScore()
-
+	"*** YOUR CODE HERE ***"
+	x, y = newPos
+	#check distance to closest ghost
+	ghost_distance = 1000
+	for i in range(len(newGhostStates)):
+		ghost_x, ghost_y = newGhostStates[i].getPosition()
+		ghost_distance = abs(x - ghost_x) + abs(y - ghost_y)
+		ghost_distance = min(ghost_distance, ghost_x)
+	
+	closest_food_distance = 1000
+	count_x = 0
+	count_y = 0
+	for x_food in oldFood:
+		for y_food in oldFood[count_x]:
+			if(oldFood[count_x][count_y]):
+				food_distance = abs(x - count_x) + abs(y - count_y)
+				closest_food_distance = min(closest_food_distance, food_distance)
+			count_y += 1
+		count_x += 1;
+		count_y = 0
+	
+	score = 0;
+	if(ghost_distance < 3):
+		score = ghost_distance
+	else:
+		score = 100 - closest_food_distance
+	return score
+	
 def scoreEvaluationFunction(currentGameState):
   """
     This default evaluation function just returns the score of the state.
@@ -106,27 +136,28 @@ class MinimaxAgent(MultiAgentSearchAgent):
   """
 
   def getAction(self, gameState):
-    """
-      Returns the minimax action from the current gameState using self.depth
-      and self.evaluationFunction.
+	"""
+	Returns the minimax action from the current gameState using self.depth
+	and self.evaluationFunction.
 
-      Here are some method calls that might be useful when implementing minimax.
+	Here are some method calls that might be useful when implementing minimax.
 
-      gameState.getLegalActions(agentIndex):
-        Returns a list of legal actions for an agent
-        agentIndex=0 means Pacman, ghosts are >= 1
+	gameState.getLegalActions(agentIndex):
+	Returns a list of legal actions for an agent
+	agentIndex=0 means Pacman, ghosts are >= 1
 
-      Directions.STOP:
-        The stop direction, which is always legal
+	Directions.STOP:
+	The stop direction, which is always legal
 
-      gameState.generateSuccessor(agentIndex, action):
-        Returns the successor game state after an agent takes an action
+	gameState.generateSuccessor(agentIndex, action):
+	Returns the successor game state after an agent takes an action
 
-      gameState.getNumAgents():
-        Returns the total number of agents in the game
-    """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+	gameState.getNumAgents():
+	Returns the total number of agents in the game
+
+	"""
+	"*** YOUR CODE HERE ***"
+	util.raiseNotDefined()
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
   """
