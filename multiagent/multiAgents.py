@@ -135,6 +135,51 @@ class MinimaxAgent(MultiAgentSearchAgent):
     Your minimax agent (question 2)
   """
 
+  def miniMax(self, gameState, agent, depth):
+	if(depth == self.depth):
+		score = self.evaluationFunction(gameState)
+		return (score, None)
+	else:
+  
+		moves = gameState.getLegalActions(agent)
+		if(len(moves) == 0):
+			#terminal state
+			score = self.evaluationFunction(gameState)
+			return (score, None)
+			
+		agent_count = gameState.getNumAgents();	
+		
+		best_score = None
+		best_move = None
+		for move in moves:
+			nextState = gameState.generateSuccessor(agent, move)
+			nextAgent = agent + 1
+			nextDepth = depth
+			if(nextAgent == agent_count):
+				nextAgent = 0
+				nextDepth = nextDepth + 1
+			minimax = self.miniMax(nextState, nextAgent, nextDepth)
+			score = minimax[0]
+			if(agent != 0):
+				#ghost - wants to minimize score
+				if (best_move == None) or (score < best_score):
+					best_score = score
+					best_move = move
+				
+			else:
+				#pac-man - wants to maximize score			
+				if (best_move == None) or (score > best_score):
+					best_score = score
+					best_move = move
+	
+		if best_move == None:
+			#terminal state
+			score = self.evaluationFunction(gameState)
+			return (score, None)
+		return (best_score, best_move)
+	
+  
+  
   def getAction(self, gameState):
 	"""
 	Returns the minimax action from the current gameState using self.depth
@@ -157,7 +202,11 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
 	"""
 	"*** YOUR CODE HERE ***"
-	util.raiseNotDefined()
+	choice = self.miniMax(gameState, 0, 0)
+	print choice[0]
+	print choice[1]
+	return choice[1]
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
   """
