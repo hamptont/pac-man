@@ -223,6 +223,13 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 			
             best_score = None
             best_move = None
+            v = 0
+            if(agent != 0):
+                #ghost
+                v = 9999999
+            else:
+                #pac-man
+                v = -9999999
             for move in moves:
                 nextState = gameState.generateSuccessor(agent, move)
                 nextAgent = agent + 1
@@ -230,35 +237,36 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 if(nextAgent == agent_count):
                     nextAgent = 0
                     nextDepth = nextDepth + 1
-                minimax = self.miniMaxAB(nextState, nextAgent, nextDepth, 99999, -99999)
-                score = minimax[0]
+
+                minimax = self.miniMaxAB(nextState, nextAgent, nextDepth, alpha, beta)
+                minimax_score = minimax[0]
+
                 if(agent != 0):
                     #ghost - wants to minimize score
-                    if (best_move == None) or (score < best_score):
-                        best_score = score
+                    v = min(v, minimax_score)
+                    if (v <= alpha):
+                        return (v, move)
+                    beta = min(beta, v)
+                    if (best_move == None) or (minimax_score < best_score):
+                        best_score = minimax_score
                         best_move = move
-					
                 else:
-                    #pac-man - wants to maximize score			
-                    if (best_move == None) or (score > best_score):
-                        best_score = score
+                    #pac-man - wants to maximize score	
+                    v = max(v, minimax_score)		
+                    if (v >= beta):
+                        return (v, move)
+                    alpha = max(alpha, v)	
+                    if (best_move == None) or (minimax_score > best_score):
+                        best_score = minimax_score
                         best_move = move
-		
-            if best_move == None:
-                #terminal state
-                score = self.evaluationFunction(gameState)
-                return (score, None)
-        return (best_score, best_move)
+        return (v, best_move)
 		
     def getAction(self, gameState):
         """
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        print "HELLO"
-        choice = self.miniMaxAB(gameState, 0, 0, 999999, -999999)
-        print choice[0]
-        print choice[1]
+        choice = self.miniMaxAB(gameState, 0, 0, -9999999, 9999999)
         return choice[1]
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
