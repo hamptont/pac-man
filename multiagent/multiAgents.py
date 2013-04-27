@@ -329,9 +329,66 @@ def betterEvaluationFunction(currentGameState):
     evaluation function (question 5).
 
     DESCRIPTION: <write something here so we know what you did>
+    
+    If the current state is a terminal state, return 999999999999999999 or
+    -100000 for wins and loses respectively. 
+    
+    If pac-man can eat a capsule on the next move, return 999999999999. 
+    This will cause pac-man to always eat the capsule, unless another move will result in a win
+    
+    
   """
   "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
+#  print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  if currentGameState.isWin():
+      return 999999999999999999
+  if currentGameState.isLose():
+      return -100000
+  
+  x, y = currentGameState.getPacmanPosition()
+  
+  pacman_actions = currentGameState.getLegalPacmanActions()
+  
+  pacman_actions_count = len(pacman_actions)
+  
+  capsule_positions = currentGameState.getCapsules()
+  get_capsule = 0
+  for capsule in capsule_positions:
+      capsule_x, capsule_y = capsule
+      dist = abs(capsule_x - x) + abs(capsule_y - y)
+      if dist < 1:
+          get_capsule = 1
+  
+  ghost_positions = currentGameState.getGhostPositions()
+
+  dist_to_ghost_x = 1000
+  dist_to_ghost_y = 1000
+  for ghost in ghost_positions:
+      ghost_x, ghost_y = ghost
+      dist_to_ghost_x = min(dist_to_ghost_x, abs(ghost_x - x))
+      dist_to_ghost_y = min(dist_to_ghost_y, abs(ghost_y - y))
+      
+  dist_to_food_x = 1000
+  dist_to_food_y = 1000
+  for food in currentGameState.getFood():
+      food_x, food_y = ghost
+      dist_to_food_x = min(dist_to_food_x, abs(food_x - x))
+      dist_to_food_y = min(dist_to_food_y, abs(food_y - y))
+      
+  dist_to_ghost = dist_to_ghost_x + dist_to_ghost_y
+  dist_to_food = dist_to_food_x + dist_to_food_y
+  food_count = currentGameState.getNumFood()
+
+  
+  if (dist_to_ghost == 0):
+      return 0
+  if get_capsule == 1:
+      return 999999999999
+  if (dist_to_ghost <= 2):
+      return (100/food_count) + (10000/dist_to_ghost) + (1/dist_to_food)
+  else:
+      return 10000 * ((1000/food_count) +(7/dist_to_food))
+
 
 # Abbreviation
 better = betterEvaluationFunction
