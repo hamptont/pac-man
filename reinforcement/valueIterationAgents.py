@@ -37,6 +37,22 @@ class ValueIterationAgent(ValueEstimationAgent):
 	self.values = util.Counter() # A Counter is a dict with default 0
      
 	"*** YOUR CODE HERE ***"
+	for i in range(iterations):
+		new_values = util.Counter()
+		for state in mdp.getStates():
+			if (state != 'TERMINAL_STATE'):
+				value = -9999999999
+				for action in mdp.getPossibleActions(state):
+					next_value = 0
+					for transition in mdp.getTransitionStatesAndProbs(state, action):
+						nextState = transition[0]
+						prob = transition[1]
+						reward = mdp.getReward(state, action, nextState)
+						next_value += prob * (reward + discount * self.values[nextState])
+					if(next_value > value):
+						value = next_value
+				new_values[state] = value
+		self.values = new_values
     	
   def getValue(self, state):
 	"""
@@ -56,14 +72,12 @@ class ValueIterationAgent(ValueEstimationAgent):
 	"*** YOUR CODE HERE ***"
 	
 	transitions = self.mdp.getTransitionStatesAndProbs(state, action)
-	print transitions
-	value = 0
+	qvalue = 0
 	for transition in transitions:
-		cord = transition[0]
+		nextState = transition[0]
 		prob = transition[1]
-		value = value + prob * self.getValue(cord)
-#	self.mdp.getReward(state, action, nextState)
-	return value
+		qvalue += prob * self.getValue(nextState)
+	return qvalue
 
   def getPolicy(self, state):
 	"""
@@ -77,13 +91,12 @@ class ValueIterationAgent(ValueEstimationAgent):
 	actions = self.mdp.getPossibleActions(state)
 	
 	best_action = None
-	best_qvalue = 0
+	best_qvalue = -99999999999
 	for action in actions:
 		qvalue = self.getQValue(state, action)
 		if(qvalue > best_qvalue):
 			best_action = action
 			best_qvalue = qvalue
-	print "BEST ACTION: ", best_action
 	return best_action
 		
   def getAction(self, state):
