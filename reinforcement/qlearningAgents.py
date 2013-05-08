@@ -34,42 +34,65 @@ class QLearningAgent(ReinforcementAgent):
         for a state
   """
   def __init__(self, **args):
-    "You can initialize Q-values here..."
-    ReinforcementAgent.__init__(self, **args)
+	"You can initialize Q-values here..."
+	ReinforcementAgent.__init__(self, **args)
 
-    "*** YOUR CODE HERE ***"
-
+	"*** YOUR CODE HERE ***"
+	self.values = util.Counter() # A Counter is a dict with default 0
+	
   def getQValue(self, state, action):
-    """
+	"""
       Returns Q(state,action)
       Should return 0.0 if we never seen
       a state or (state,action) tuple
-    """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-
+	"""
+	"*** YOUR CODE HERE ***"
+	state_values = self.values[state]
+	if state_values == 0:
+		return 0
+	return state_values[action]
 
   def getValue(self, state):
-    """
+	"""
       Returns max_action Q(state,action)
       where the max is over legal actions.  Note that if
       there are no legal actions, which is the case at the
       terminal state, you should return a value of 0.0.
-    """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+	"""
+	"*** YOUR CODE HERE ***"
+	max_value = -9999999999999
+	actions = self.getLegalActions(state)
+	if len(actions) == 0:
+		return 0.0
+		
+	for action in actions:
+		value = self.getQValue(state, action)
+		if value > max_value:
+			max_value = value
+	
+	return max_value
 
   def getPolicy(self, state):
-    """
+	"""
       Compute the best action to take in a state.  Note that if there
       are no legal actions, which is the case at the terminal state,
       you should return None.
-    """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+	"""
+	"*** YOUR CODE HERE ***"
+	actions = self.getLegalActions(state)
+		
+	best_action = None
+	best_value = -99999999999999
+	for action in actions:
+		value = self.getValue(action)
+		if value > best_value:
+			best_value = value
+			best_action = action
 
+	return action
+	
   def getAction(self, state):
-    """
+	"""
       Compute the action to take in the current state.  With
       probability self.epsilon, we should take a random action and
       take the best policy action otherwise.  Note that if there are
@@ -78,27 +101,54 @@ class QLearningAgent(ReinforcementAgent):
 
       HINT: You might want to use util.flipCoin(prob)
       HINT: To pick randomly from a list, use random.choice(list)
-    """
-    # Pick Action
-    legalActions = self.getLegalActions(state)
-    action = None
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-
-    return action
+	"""
+	# Pick Action
+	legalActions = self.getLegalActions(state)
+	action = None
+	
+	"*** YOUR CODE HERE ***"
+	print "FLIP FLIP"
+	
+	'''
+	flip = util.flipCoin(self.epsilon)
+	print flip
+	if flip:
+		return self.getPolicy(state)
+	
+	return random.choice(legalActions)
+	
+	return action
+	'''
 
   def update(self, state, action, nextState, reward):
-    """
+	"""
       The parent class calls this to observe a
       state = action => nextState and reward transition.
       You should do your Q-Value update here
 
       NOTE: You should never call this function,
       it will be called on your behalf
-    """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-
+	"""
+	"*** YOUR CODE HERE ***"
+	#UPDATE Q VALUE
+	
+	states = self.values[state]
+	if states == 0:
+		self.values[state] = util.Counter()
+		
+	oldQ = self.values[state][action]
+	alpha = self.alpha
+	
+	maxQ = -999999
+	for action in self.getLegalActions(state):
+		nextQ = self.getQValue(state, action)
+		if nextQ > maxQ:
+			maxQ = nextQ
+	
+	sample = reward + self.discount * maxQ
+	print sample
+	self.values[state][action] = (1 - alpha) * oldQ + alpha * sample
+	
 class PacmanQAgent(QLearningAgent):
   "Exactly the same as QLearningAgent, but with different default parameters"
 
