@@ -47,8 +47,10 @@ class QLearningAgent(ReinforcementAgent):
       a state or (state,action) tuple
 	"""
 	"*** YOUR CODE HERE ***"
+
 	state_values = self.values[state]
 	if state_values == 0:
+		self.values[state] = util.Counter()
 		return 0
 	return state_values[action]
 
@@ -60,11 +62,11 @@ class QLearningAgent(ReinforcementAgent):
       terminal state, you should return a value of 0.0.
 	"""
 	"*** YOUR CODE HERE ***"
-	max_value = -9999999999999
 	actions = self.getLegalActions(state)
 	if len(actions) == 0:
 		return 0.0
 		
+	max_value = -9999999999999
 	for action in actions:
 		value = self.getQValue(state, action)
 		if value > max_value:
@@ -85,10 +87,13 @@ class QLearningAgent(ReinforcementAgent):
 	best_value = -99999999999999
 	for action in actions:
 		value = self.getQValue(state, action)
-		if value > best_value:
+		if value == best_value:
+			best_action = random.choice([action, best_action])
+		elif value > best_value:
 			best_value = value
 			best_action = action
-	return action
+		
+	return best_action
 	
   def getAction(self, state):
 	"""
@@ -103,14 +108,17 @@ class QLearningAgent(ReinforcementAgent):
 	"""
 	# Pick Action
 	legalActions = self.getLegalActions(state)
-	action = None
 	
 	"*** YOUR CODE HERE ***"	
+	if len(legalActions) == 0:
+		return None
 	
-	flip = util.flipCoin(1.0 - self.epsilon)
-	if flip:
+	take_random_action = util.flipCoin(self.epsilon)
+	if take_random_action:
+		return random.choice(legalActions)
+	else:
 		return self.getPolicy(state)
-	return random.choice(legalActions)
+
 		
 
   def update(self, state, action, nextState, reward):
@@ -123,8 +131,7 @@ class QLearningAgent(ReinforcementAgent):
       it will be called on your behalf
 	"""
 	"*** YOUR CODE HERE ***"
-	#UPDATE Q VALUE
-
+	
 	states = self.values[state]
 	if states == 0:
 		self.values[state] = util.Counter()
@@ -143,7 +150,7 @@ class QLearningAgent(ReinforcementAgent):
 	sample = (reward) + self.discount * maxQ
 
 	self.values[state][action] = (1 - alpha) * oldQ + alpha * sample
-	
+		
 class PacmanQAgent(QLearningAgent):
   "Exactly the same as QLearningAgent, but with different default parameters"
 
