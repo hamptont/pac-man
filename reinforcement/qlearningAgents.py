@@ -107,7 +107,7 @@ class QLearningAgent(ReinforcementAgent):
 	
 	"*** YOUR CODE HERE ***"	
 	
-	flip = util.flipCoin(1 - self.epsilon)
+	flip = util.flipCoin(1.0 - self.epsilon)
 	if flip:
 		return self.getPolicy(state)
 	return random.choice(legalActions)
