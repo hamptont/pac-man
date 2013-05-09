@@ -84,11 +84,10 @@ class QLearningAgent(ReinforcementAgent):
 	best_action = None
 	best_value = -99999999999999
 	for action in actions:
-		value = self.getValue(action)
+		value = self.getQValue(state, action)
 		if value > best_value:
 			best_value = value
 			best_action = action
-
 	return action
 	
   def getAction(self, state):
@@ -106,19 +105,13 @@ class QLearningAgent(ReinforcementAgent):
 	legalActions = self.getLegalActions(state)
 	action = None
 	
-	"*** YOUR CODE HERE ***"
-	print "FLIP FLIP"
+	"*** YOUR CODE HERE ***"	
 	
-	'''
-	flip = util.flipCoin(self.epsilon)
-	print flip
+	flip = util.flipCoin(1 - self.epsilon)
 	if flip:
 		return self.getPolicy(state)
-	
 	return random.choice(legalActions)
-	
-	return action
-	'''
+		
 
   def update(self, state, action, nextState, reward):
 	"""
@@ -131,7 +124,7 @@ class QLearningAgent(ReinforcementAgent):
 	"""
 	"*** YOUR CODE HERE ***"
 	#UPDATE Q VALUE
-	
+
 	states = self.values[state]
 	if states == 0:
 		self.values[state] = util.Counter()
@@ -139,14 +132,16 @@ class QLearningAgent(ReinforcementAgent):
 	oldQ = self.values[state][action]
 	alpha = self.alpha
 	
-	maxQ = -999999
-	for action in self.getLegalActions(state):
-		nextQ = self.getQValue(state, action)
+	maxQ = -999999999
+	if len(self.getLegalActions(nextState)) == 0:
+		maxQ = 0
+	for a in self.getLegalActions(nextState):
+		nextQ = self.getQValue(nextState, a)
 		if nextQ > maxQ:
 			maxQ = nextQ
-	
-	sample = reward + self.discount * maxQ
-	print sample
+
+	sample = (reward) + self.discount * maxQ
+
 	self.values[state][action] = (1 - alpha) * oldQ + alpha * sample
 	
 class PacmanQAgent(QLearningAgent):
