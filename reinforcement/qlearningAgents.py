@@ -192,27 +192,44 @@ class ApproximateQAgent(PacmanQAgent):
      should work as is.
   """
   def __init__(self, extractor='IdentityExtractor', **args):
-    self.featExtractor = util.lookup(extractor, globals())()
-    PacmanQAgent.__init__(self, **args)
+	self.featExtractor = util.lookup(extractor, globals())()
+	PacmanQAgent.__init__(self, **args)
 
-    # You might want to initialize weights here.
-    "*** YOUR CODE HERE ***"
+	# You might want to initialize weights here.
+	"*** YOUR CODE HERE ***"
+	self.weights = util.Counter()
 
   def getQValue(self, state, action):
-    """
+	"""
       Should return Q(state,action) = w * featureVector
       where * is the dotProduct operator
-    """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+	"""
+	"*** YOUR CODE HERE ***"
+	features = self.featExtractor.getFeatures(state, action)
+	weights = self.weights
+	QValue = 0
+	
+	for feature in features:
+		QValue += features[feature] * weights[feature]
+		
+	return QValue
 
   def update(self, state, action, nextState, reward):
-    """
+	"""
        Should update your weights based on transition
-    """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-
+	"""
+	"*** YOUR CODE HERE ***"
+	features = self.featExtractor.getFeatures(state, action)
+	weights = self.weights
+	
+	for feature in features:
+		correction = (reward + self.discount * self.getValue(nextState)) - self.getQValue(state, action)
+		weights[feature] = weights[feature] + self.alpha * correction * features[feature]
+	
+	self.weights = weights
+	
+	
+	
   def final(self, state):
     "Called at the end of each game."
     # call the super-class final method
