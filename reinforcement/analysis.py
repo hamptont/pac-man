@@ -26,12 +26,12 @@ def question3a():
   # If not possible, return 'NOT POSSIBLE'
 
 def question3b():
-  answerDiscount = 0.0
-  answerNoise = 0.0
-  answerLivingReward = 0.0
-#  return answerDiscount, answerNoise, answerLivingReward
+  answerDiscount = 0.1
+  answerNoise = 0.1
+  answerLivingReward = 0.1
+  return answerDiscount, answerNoise, answerLivingReward
   # If not possible, return 'NOT POSSIBLE'
-  return 'NOT POSSIBLE'
+
 
 def question3c():
   answerDiscount = 0.9
@@ -55,9 +55,11 @@ def question3e():
   # If not possible, return 'NOT POSSIBLE'
 
 def question6():
-  answerEpsilon = 0.25
-  answerLearningRate = 0.5
-  return answerEpsilon, answerLearningRate
+  answerEpsilon = 0.0
+  answerLearningRate = 0.0
+  return 'NOT POSSIBLE' 
+
+ # return answerEpsilon, answerLearningRate
   # If not possible, return 'NOT POSSIBLE'
   
 if __name__ == '__main__':
