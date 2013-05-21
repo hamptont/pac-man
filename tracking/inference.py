@@ -126,7 +126,7 @@ class ExactInference(InferenceModule):
 	self.beliefs = allPossible
     
   def elapseTime(self, gameState):
-    """
+	"""
     Update self.beliefs in response to a time step passing from the current state.
     
     The transition model is not entirely stationary: it may depend on Pacman's
@@ -167,9 +167,24 @@ class ExactInference(InferenceModule):
           This method uses the ghost agent to determine what positions the ghost
           will move to from the provided gameState.  The ghost must be placed
           in the gameState with a call to self.setGhostPosition above.
-    """
+	"""
     
-    "*** YOUR CODE HERE ***"
+	"*** YOUR CODE HERE ***"
+	
+	newDistribution = util.Counter()
+
+	#for each spot the ghost could have been
+	for oldPos in self.legalPositions:
+		#find the distribution of new possible positions 
+		newPosDist = self.getPositionDistribution(self.setGhostPosition(gameState, oldPos))
+		
+		for newPos in newPosDist:
+			prob = newPosDist[newPos]
+			newDistribution[newPos] += prob * self.beliefs[oldPos]
+			
+	newDistribution.normalize()
+	self.beliefs = newDistribution
+
 
   def getBeliefDistribution(self):
     return self.beliefs
