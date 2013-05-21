@@ -98,31 +98,32 @@ class ExactInference(InferenceModule):
     self.beliefs.normalize()
   
   def observe(self, observation, gameState):
-    """
-    Updates beliefs based on the distance observation and Pacman's position.
+	"""
+	Updates beliefs based on the distance observation and Pacman's position.
     
-    The noisyDistance is the estimated manhattan distance to the ghost you are tracking.
+	The noisyDistance is the estimated manhattan distance to the ghost you are tracking.
     
-    The emissionModel below stores the probability of the noisyDistance for any true 
-    distance you supply.  That is, it stores P(noisyDistance | TrueDistance).
+	The emissionModel below stores the probability of the noisyDistance for any true 
+	distance you supply.  That is, it stores P(noisyDistance | TrueDistance).
 
-    self.legalPositions is a list of the possible ghost positions (you
-    should only consider positions that are in self.legalPositions).
-    """
-    noisyDistance = observation
-    emissionModel = busters.getObservationDistribution(noisyDistance)
-    pacmanPosition = gameState.getPacmanPosition()
+	self.legalPositions is a list of the possible ghost positions (you
+	should only consider positions that are in self.legalPositions).
+	"""
+	noisyDistance = observation
+	emissionModel = busters.getObservationDistribution(noisyDistance)
+	pacmanPosition = gameState.getPacmanPosition()
     
-    "*** YOUR CODE HERE ***"
-    # Replace this code with a correct observation update
-    allPossible = util.Counter()
-    for p in self.legalPositions:
-      trueDistance = util.manhattanDistance(p, pacmanPosition)
-      if emissionModel[trueDistance] > 0: allPossible[p] = 1.0
-    allPossible.normalize()
+	"*** YOUR CODE HERE ***"
+	# Replace this code with a correct observation update
+	allPossible = util.Counter()
+	for p in self.legalPositions:
+		trueDistance = util.manhattanDistance(p, pacmanPosition)
+		if emissionModel[trueDistance] > 0: 
+			allPossible[p] = self.beliefs[p] * emissionModel[trueDistance]
+	allPossible.normalize()
         
-    "*** YOUR CODE HERE ***"
-    self.beliefs = allPossible
+	"*** YOUR CODE HERE ***"
+	self.beliefs = allPossible
     
   def elapseTime(self, gameState):
     """
