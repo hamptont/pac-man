@@ -199,19 +199,37 @@ class ParticleFilter(InferenceModule):
   """
   
   def initializeUniformly(self, gameState, numParticles=300):
-    "Initializes a list of particles."
-    self.numParticles = numParticles
-    "*** YOUR CODE HERE ***"
-  
+	"Initializes a list of particles."
+	self.numParticles = numParticles
+	"*** YOUR CODE HERE ***"
+	
+	#split the particles randomly between legal states to start
+	self.beliefs = util.Counter()
+	for i in range(1, numParticles):
+		randomPos = random.choice(self.legalPositions)
+		self.beliefs[randomPos] += 1
+		
   def observe(self, observation, gameState):
-    "Update beliefs based on the given distance observation."
-    emissionModel = busters.getObservationDistribution(observation)
-    pacmanPosition = gameState.getPacmanPosition()
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+	"Update beliefs based on the given distance observation."
+	emissionModel = busters.getObservationDistribution(observation)
+	pacmanPosition = gameState.getPacmanPosition()
+	
+#	print "emissionModel: ", emissionModel
+	"*** YOUR CODE HERE ***"
+	
+	allPossible = util.Counter()
+	for p in self.legalPositions:
+		trueDistance = util.manhattanDistance(p, pacmanPosition)
+		if emissionModel[trueDistance] > 0: 
+			allPossible[p] = self.beliefs[p] * emissionModel[trueDistance]
+	allPossible.normalize()
+        
+	"*** YOUR CODE HERE ***"
+	self.beliefs = allPossible
+
     
   def elapseTime(self, gameState):
-    """
+	"""
     Update beliefs for a time step elapsing.
 
     As in the elapseTime method of ExactInference, you should use:
@@ -221,17 +239,31 @@ class ParticleFilter(InferenceModule):
     to obtain the distribution over new positions for the ghost, given
     its previous position (oldPos) as well as Pacman's current
     position.
-    """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+	"""
+	"*** YOUR CODE HERE ***"
+	
+	newDistribution = util.Counter()
 
+	#for each spot the ghost could have been
+	for oldPos in self.legalPositions:
+		#find the distribution of new possible positions 
+		newPosDist = self.getPositionDistribution(self.setGhostPosition(gameState, oldPos))
+
+		for newPos in newPosDist:
+			prob = newPosDist[newPos]
+			newDistribution[newPos] += prob * self.beliefs[oldPos]
+
+	#newDistribution.normalize()
+	self.beliefs = newDistribution
+
+	
   def getBeliefDistribution(self):
-    """
+	"""
     Return the agent's current belief state, a distribution over
     ghost locations conditioned on all evidence and time passage.
-    """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+	"""
+	"*** YOUR CODE HERE ***"
+	return self.beliefs
 
 class MarginalInference(InferenceModule):
   "A wrapper around the JointInference module that returns marginal beliefs about ghosts."
