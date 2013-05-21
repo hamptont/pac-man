@@ -73,7 +73,7 @@ class GreedyBustersAgent(BustersAgent):
     self.distancer = Distancer(gameState.data.layout, False)
     
   def chooseAction(self, gameState):
-    """
+	"""
     First computes the most likely position of each ghost that 
     has not yet been captured, then chooses an action that brings 
     Pacman closer to the closest ghost (in maze distance!).
@@ -101,12 +101,46 @@ class GreedyBustersAgent(BustersAgent):
          gameState.getLivingGhosts() list.
      
     You may remove Directions.STOP from the list of available actions.
-    """
-    pacmanPosition = gameState.getPacmanPosition()
-    legal = [a for a in gameState.getLegalPacmanActions() if a != Directions.STOP]
-    livingGhosts = gameState.getLivingGhosts()
-    livingGhostPositionDistributions = [beliefs for i,beliefs
-                                        in enumerate(self.ghostBeliefs)
-                                        if livingGhosts[i+1]]
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+	"""
+	pacmanPosition = gameState.getPacmanPosition()
+	legal = [a for a in gameState.getLegalPacmanActions() if a != Directions.STOP]
+	livingGhosts = gameState.getLivingGhosts()
+	livingGhostPositionDistributions = [beliefs for i,beliefs
+										in enumerate(self.ghostBeliefs)
+										if livingGhosts[i+1]]
+										
+	'''
+	print "pacmanPosition: ", pacmanPosition
+	print "legal: ", legal
+	print "livingGhosts: ", livingGhosts
+	print "livingGhostPositionDistributions: ", livingGhostPositionDistributions
+	'''									
+										
+	"*** YOUR CODE HERE ***"
+	best_attack_distance = 999999999
+	best_action = None
+	#iterate over each legal pac-man action
+	for action in legal:
+		successorPosition = Actions.getSuccessor(pacmanPosition, action)
+		#iterate over the distribution of each living ghost
+		for positionDistribution in livingGhostPositionDistributions:
+			ghost_max_prob = 0
+			ghost_pos = None
+			#iterate over each legal position of the ghost to find most likely ghost pos
+			for position in positionDistribution:
+				prob = positionDistribution[position]
+				if(prob > ghost_max_prob):
+					ghost_max_prob = prob
+					ghost_pos = position
+			
+			#find the distance between pac-man's new potential position and the
+			#ghosts most likely position
+			attack_distance = self.distancer.getDistance(successorPosition, ghost_pos)
+			
+			#check to see if we have found a new best move for pac-man
+			if attack_distance < best_attack_distance:
+				best_attack_distance = attack_distance
+				best_action = action
+	
+	return best_action
+		
