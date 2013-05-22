@@ -205,10 +205,9 @@ class ParticleFilter(InferenceModule):
 	
 	#split the particles randomly between legal states to start
 	self.beliefs = util.Counter()
-	for i in range(1, numParticles):
+	for i in range(0, numParticles):
 		randomPos = random.choice(self.legalPositions)
 		self.beliefs[randomPos] += 1
-	self.beliefs.normalize()
 		
   def observe(self, observation, gameState):
 	"Update beliefs based on the given distance observation."
@@ -216,18 +215,23 @@ class ParticleFilter(InferenceModule):
 	pacmanPosition = gameState.getPacmanPosition()
 	
 	"*** YOUR CODE HERE ***"
-	
-	allPossible = util.Counter()
-	for p in self.legalPositions:
-		trueDistance = util.manhattanDistance(p, pacmanPosition)
-		if emissionModel[trueDistance] > 0: 
-			allPossible[p] = self.beliefs[p] * emissionModel[trueDistance]
-	allPossible.normalize()
-        
-	"*** YOUR CODE HERE ***"
-	self.beliefs = allPossible
 
-    
+	particles = self.beliefs
+	
+	#reweight the particles based on how likely they are
+	for position in self.legalPositions:
+		dist = util.manhattanDistance(position, pacmanPosition)
+		particles[position] *= emissionModel[dist] 
+	
+	#resample particles
+	newDistribution = util.Counter()
+	for i in range(self.numParticles):
+		weightedGuess = util.sample(particles)
+		newDistribution[weightedGuess] += 1
+
+	self.beliefs = newDistribution
+
+
   def elapseTime(self, gameState):
 	"""
     Update beliefs for a time step elapsing.
@@ -242,20 +246,14 @@ class ParticleFilter(InferenceModule):
 	"""
 	"*** YOUR CODE HERE ***"
 	
-	newDistribution = util.Counter()
-
-	#for each spot the ghost could have been
+	particles = util.Counter()
 	for oldPos in self.legalPositions:
-		#find the distribution of new possible positions 
-		newPosDist = self.getPositionDistribution(self.setGhostPosition(gameState, oldPos))
-
-		for newPos in newPosDist:
-			prob = newPosDist[newPos]
-			newDistribution[newPos] += prob * self.beliefs[oldPos]
-
-	#newDistribution.normalize()
-	self.beliefs = newDistribution
-
+		transition = self.getPositionDistribution(self.setGhostPosition(gameState,oldPos))
+		for i in range(self.beliefs[oldPos]):
+			particles[util.sample(transition)] += 1
+			
+	self.beliefs = particles
+	
 	
   def getBeliefDistribution(self):
 	"""
