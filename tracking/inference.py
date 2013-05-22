@@ -208,13 +208,13 @@ class ParticleFilter(InferenceModule):
 	for i in range(1, numParticles):
 		randomPos = random.choice(self.legalPositions)
 		self.beliefs[randomPos] += 1
+	self.beliefs.normalize()
 		
   def observe(self, observation, gameState):
 	"Update beliefs based on the given distance observation."
 	emissionModel = busters.getObservationDistribution(observation)
 	pacmanPosition = gameState.getPacmanPosition()
 	
-#	print "emissionModel: ", emissionModel
 	"*** YOUR CODE HERE ***"
 	
 	allPossible = util.Counter()
