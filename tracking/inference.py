@@ -309,7 +309,7 @@ class JointParticleFilter:
     self.ghostAgents.append(agent)
     
   def elapseTime(self, gameState):
-    """
+	"""
     Samples each particle's next state based on its current state and the gameState.
 
     To loop over the ghosts, use:
@@ -348,16 +348,22 @@ class JointParticleFilter:
           
           The ghost agent you are meant to supply is self.ghostAgents[ghostIndex-1],
           but in this project all ghost agents are always the same.
-    """
-    newParticles = []
-    for oldParticle in self.particles:
-      newParticle = list(oldParticle) # A list of ghost positions
-      "*** YOUR CODE HERE ***"
-      newParticles.append(tuple(newParticle))
-    self.particles = newParticles
-  
+	"""
+	
+	newParticles = []
+	for oldParticle in self.particles:
+		newParticle = list(oldParticle) # A list of ghost positions
+		prevGhostPositions = list(oldParticle)
+		for i in range(self.numGhosts):
+			newPosDist = getPositionDistributionForGhost(setGhostPositions(gameState, prevGhostPositions),
+                                                   i + 1, self.ghostAgents[i])
+			newParticle[i] = util.sample(newPosDist)
+		newParticles.append(tuple(newParticle))
+	self.particles = newParticles  
+	
+	
   def observeState(self, gameState):
-    """
+	"""
     Resamples the set of particles using the likelihood of the noisy observations.
 
     As in elapseTime, to loop over the ghosts, use:
@@ -377,13 +383,13 @@ class JointParticleFilter:
          
       2) When all particles receive 0 weight, they should be recreated from the
           prior distribution by calling initializeParticles.
-    """ 
-    pacmanPosition = gameState.getPacmanPosition()
-    noisyDistances = gameState.getNoisyGhostDistances()
-    if len(noisyDistances) < self.numGhosts: return
-    emissionModels = [busters.getObservationDistribution(dist) for dist in noisyDistances]
+	""" 
+	pacmanPosition = gameState.getPacmanPosition()
+	noisyDistances = gameState.getNoisyGhostDistances()
+	if len(noisyDistances) < self.numGhosts: return
+	emissionModels = [busters.getObservationDistribution(dist) for dist in noisyDistances]
 
-    "*** YOUR CODE HERE ***"
+	"*** YOUR CODE HERE ***"
   
   def getBeliefDistribution(self):
     dist = util.Counter()
